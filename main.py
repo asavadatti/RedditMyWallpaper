@@ -2,31 +2,25 @@
 #  - Sets your desktop background as a random picture from a subreddit.
 
 ### Settings
-
-subreddits = [
-    'cityporn',
-    'earthporn'
-]
-
-sort = 'hot'
-
 limit = 10
 
 ### Dependencies
-
 from wallpaperchanger import changeWallpaper as wp
-from random import choice
-from reddit import Reddit # Considering to remove this dependency, as I use very few features
+import json
+import urllib
+import random
 from urllib import urlretrieve
-from os     import getcwd
+from os import getcwd
 
 ### Program
+url = "http://www.reddit.com/r/earthporn.json"
+j = json.load(urllib.urlopen(url))['data']
+print len(j['children'])
+urls = []
 
-r = Reddit(user_agent="RedditMyWallpaper")
-posts = r.get_subreddit("+".join(subreddits))
-posts = getattr(posts, 'get_%s' % sort)(limit=limit)
-url = choice(posts).url
-print url
-urlretrieve(url, 'img.jpg')
+for i in range(1, 25):
+  urls.append(j['children'][i]['data']['url'])
+
+print urlretrieve(random.choice(urls), 'img.jpg')
 
 wp(getcwd() + '/img.jpg')
